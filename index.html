@@ -89,7 +89,7 @@
             list-style: none;
         }
 
-        .rules-list li, .staff-list li {
+        .rules-list li {
             margin: 1rem 0;
             padding-left: 1.5rem;
             position: relative;
@@ -106,6 +106,11 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: background 0.3s ease;
         }
 
         .staff-avatar {
@@ -113,6 +118,16 @@
             height: 40px;
             border-radius: 50%;
             border: 2px solid #4CAF50;
+        }
+
+        .staff-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .staff-role {
+            font-size: 0.8rem;
+            color: #4CAF50;
         }
 
         .info-footer {
@@ -132,6 +147,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -159,19 +182,8 @@
 
         <div class="right-panel">
             <h2>Staff</h2>
-            <ul class="staff-list">
-                <li>
-                    <img src="https://i.imgur.com/staff1.jpg" class="staff-avatar">
-                    <span>Fondateur - Pseudo1</span>
-                </li>
-                <li>
-                    <img src="https://i.imgur.com/staff2.jpg" class="staff-avatar">
-                    <span>Admin - Pseudo2</span>
-                </li>
-                <li>
-                    <img src="https://i.imgur.com/staff3.jpg" class="staff-avatar">
-                    <span>Modérateur - Pseudo3</span>
-                </li>
+            <ul class="staff-list" id="staffList">
+                <div class="loading">Chargement...</div>
             </ul>
         </div>
     </div>
@@ -183,6 +195,7 @@
     <canvas class="particles"></canvas>
 
     <script>
+        // Système de particules
         const canvas = document.querySelector('.particles');
         const ctx = canvas.getContext('2d');
 
@@ -236,8 +249,47 @@
             requestAnimationFrame(animate);
         }
 
+        // Chargement des profils Steam
+        async function loadStaffProfiles() {
+            const staffList = document.getElementById('staffList');
+            const loading = document.querySelector('.loading');
+            
+            try {
+                loading.style.display = 'block';
+                const response = await fetch('steam_api.php');
+                const staffData = await response.json();
+                
+                staffList.innerHTML = '';
+                
+                staffData.forEach(member => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <img src="${member.avatar}" class="staff-avatar" alt="${member.name}">
+                        <div class="staff-info">
+                            <span class="staff-name">${member.name}</span>
+                            <span class="staff-role">${member.role}</span>
+                        </div>
+                    `;
+                    staffList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Erreur lors du chargement des profils:', error);
+                staffList.innerHTML = '<li>Erreur lors du chargement des profils</li>';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Initialisation
         init();
         animate();
+        loadStaffProfiles();
+
+        // Gestion du redimensionnement
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
