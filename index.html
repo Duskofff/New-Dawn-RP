@@ -21,35 +21,16 @@
             height: 100vh;
         }
 
-        .background-slideshow {
+        .background {
             position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
             z-index: -1;
-        }
-
-        .slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            background-image: url('https://i.imgur.com/YourImage.jpg');
             background-size: cover;
             background-position: center;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            animation: zoom 20s infinite;
-        }
-
-        .slide:nth-child(1) { background-image: url('https://i.imgur.com/image1.jpg'); animation-delay: 0s; }
-        .slide:nth-child(2) { background-image: url('https://i.imgur.com/image2.jpg'); animation-delay: 5s; }
-        .slide:nth-child(3) { background-image: url('https://i.imgur.com/image3.jpg'); animation-delay: 10s; }
-        .slide:nth-child(4) { background-image: url('https://i.imgur.com/image4.jpg'); animation-delay: 15s; }
-
-        @keyframes zoom {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         .overlay {
@@ -75,7 +56,6 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: slideIn 1s ease-out;
         }
 
         .center-panel {
@@ -84,7 +64,6 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            animation: fadeIn 2s ease-out;
         }
 
         .server-title {
@@ -93,6 +72,11 @@
             margin-bottom: 1rem;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); }
         }
 
         .server-subtitle {
@@ -109,7 +93,6 @@
             margin: 1rem 0;
             padding-left: 1.5rem;
             position: relative;
-            transition: transform 0.3s ease;
         }
 
         .rules-list li:before {
@@ -132,39 +115,14 @@
             border: 2px solid #4CAF50;
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .social-links {
+        .info-footer {
             position: absolute;
             bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 2rem;
-        }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
+            left: 0;
+            right: 0;
+            text-align: center;
             font-size: 1.2rem;
-            transition: transform 0.3s ease;
-        }
-
-        .social-links a:hover {
-            transform: scale(1.2);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .particles {
@@ -178,12 +136,7 @@
     </style>
 </head>
 <body>
-    <div class="background-slideshow">
-        <div class="slide"></div>
-        <div class="slide"></div>
-        <div class="slide"></div>
-        <div class="slide"></div>
-    </div>
+    <div class="background"></div>
     <div class="overlay"></div>
     
     <div class="content">
@@ -223,29 +176,13 @@
         </div>
     </div>
 
-    <div class="social-links">
-        <a href="https://discord.gg/votrelien">Discord</a>
-        <a href="https://steam.com/votregroupe">Steam</a>
-        <a href="https://forum.votresite.com">Forum</a>
+    <div class="info-footer">
+        Bon jeu sur notre serveur !
     </div>
 
     <canvas class="particles"></canvas>
 
     <script>
-        // Slideshow automatique
-        const slides = document.querySelectorAll('.slide');
-        let currentSlide = 0;
-
-        function nextSlide() {
-            slides[currentSlide].style.opacity = '0';
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].style.opacity = '1';
-        }
-
-        slides[0].style.opacity = '1';
-        setInterval(nextSlide, 5000);
-
-        // Système de particules
         const canvas = document.querySelector('.particles');
         const ctx = canvas.getContext('2d');
 
@@ -253,15 +190,15 @@
         canvas.height = window.innerHeight;
 
         const particles = [];
-        const particleCount = 100;
+        const particleCount = 50;
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * 3 - 1.5;
+                this.size = Math.random() * 1.5;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
             }
 
             update() {
@@ -275,7 +212,7 @@
             }
 
             draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
