@@ -3,309 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Screen - Serveur GMod</title>
+    <title>Serveur RP</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-        
-        body, html {
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            color: white;
+            box-sizing: border-box;
         }
-        
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .background-slideshow {
+            position: fixed;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            top: 0;
+            left: 0;
             z-index: -1;
         }
 
-        .particles {
+        .slide {
             position: absolute;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            animation: zoom 20s infinite;
         }
-        
-        .container {
-            position: relative;
+
+        .slide:nth-child(1) { background-image: url('https://i.imgur.com/image1.jpg'); animation-delay: 0s; }
+        .slide:nth-child(2) { background-image: url('https://i.imgur.com/image2.jpg'); animation-delay: 5s; }
+        .slide:nth-child(3) { background-image: url('https://i.imgur.com/image3.jpg'); animation-delay: 10s; }
+        .slide:nth-child(4) { background-image: url('https://i.imgur.com/image4.jpg'); animation-delay: 15s; }
+
+        @keyframes zoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .overlay {
+            position: fixed;
             width: 100%;
             height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .content {
+            position: relative;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .left-panel, .right-panel {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideIn 1s ease-out;
+        }
+
+        .center-panel {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1;
-        }
-
-        .header {
             text-align: center;
-            margin-bottom: 50px;
+            animation: fadeIn 2s ease-out;
         }
 
-        .title {
-            font-size: 5em;
-            font-weight: 900;
-            margin: 0;
-            text-transform: uppercase;
+        .server-title {
+            font-size: 4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
         }
 
-        .subtitle {
-            font-size: 1.8em;
-            margin: 10px 0;
-            opacity: 0.9;
+        .server-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
         }
 
-        .profile {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background-color: #e94560;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
-            margin-bottom: 40px;
-            overflow: hidden;
+        .rules-list, .staff-list {
+            list-style: none;
+        }
+
+        .rules-list li, .staff-list li {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
             position: relative;
-            animation: pulse 2s infinite ease-in-out;
+            transition: transform 0.3s ease;
         }
 
-        .profile img {
-            width: 90%;
-            height: 90%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .progress-container {
-            width: 80%;
-            max-width: 800px;
-            margin-top: 40px;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, #e94560, #ff9a3c);
-            width: 0%;
-            border-radius: 4px;
-            animation: progress 30s linear forwards;
-        }
-
-        .loading-text {
-            text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .message-ticker {
+        .rules-list li:before {
+            content: "→";
             position: absolute;
-            bottom: 40px;
             left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px 0;
-            overflow: hidden;
+            color: #4CAF50;
         }
 
-        .message-content {
+        .staff-list li {
             display: flex;
-            animation: ticker 30s linear infinite;
-            white-space: nowrap;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .message {
-            margin: 0 30px;
-            font-size: 1.2em;
+        .staff-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #4CAF50;
         }
 
         @keyframes glow {
-            from {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            }
-            to {
-                text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 30px #e94560;
-            }
+            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); }
         }
 
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(233, 69, 96, 0.9);
-            }
-            100% {
-                box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
-            }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes progress {
-            0% { width: 0%; }
-            10% { width: 15%; }
-            30% { width: 40%; }
-            50% { width: 60%; }
-            70% { width: 75%; }
-            90% { width: 90%; }
-            100% { width: 100%; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes ticker {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-
-        .game-info {
+        .social-links {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            text-align: right;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2rem;
         }
 
-        .info-item {
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            opacity: 0.8;
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
         }
 
-        .footer {
-            position: absolute;
-            bottom: 10px;
-            font-size: 0.8em;
-            opacity: 0.6;
+        .social-links a:hover {
+            transform: scale(1.2);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
-    
-    <div class="particles" id="particles-js"></div>
-    
-    <div class="container">
-        <div class="header">
-            <h1 class="title">New Dawn RolePlay</h1>
-            <h2 class="subtitle">Un monde de possibilités vous attend</h2>
-        </div>
-        
-        <div class="profile">
-            <img src="/api/placeholder/300/300" alt="Avatar du serveur" id="profile-image">
-        </div>
-        
-        <div class="loading-text">
-            Chargement de votre expérience...
-        </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
-            <div id="loading-status">Téléchargement des fichiers addons (0%)...</div>
-        </div>
+    <div class="background-slideshow">
+        <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
     </div>
+    <div class="overlay"></div>
     
-    <div class="game-info">
-        <div class="info-item">Map: <span id="map-name">gm_construct</span></div>
-        <div class="info-item">Joueurs: <span id="players">0/32</span></div>
-        <div class="info-item">Ping: <span id="ping">45ms</span></div>
-    </div>
-    
-    <div class="message-ticker">
-        <div class="message-content">
-            <div class="message">Bienvenue sur News Dawn RP ! Plongez dans un RP libre et immersif où chaque décision compte.</div>
-            <div class="message">Profitez d'objets et modèles 3D exclusifs : t'el que de la drogue à la police !</div>
-            <div class="message">Accédez rapidement à votre inventaire avec F4, et personnalisez-le en ajoutant des armes via ALT+C.</div>
-            <div class="message">Notre serveur est en évolution constante** ! Attendez-vous à de nouvelles fonctionnalités et améliorations régulières.</div>
-            <div class="message">Besoin d'aide ? Tapez /help pour découvrir toutes les fonctionnalités exclusives de notre serveur.</div>
-            <div class="message">Rejoignez notre Discord pour ne rien manquer des événements à venir et des mises à jour importantes !</div>            
+    <div class="content">
+        <div class="left-panel">
+            <h2>Règles du serveur</h2>
+            <ul class="rules-list">
+                <li>Respectez tous les joueurs</li>
+                <li>Pas de freekill/freeattack</li>
+                <li>RP sérieux obligatoire</li>
+                <li>Pas de métagaming</li>
+                <li>Pas de powergaming</li>
+                <li>Respectez le staff</li>
+            </ul>
         </div>
-    </div>
-    
-    <div class="footer">
-        © 2025 - New Dawn RP - Tous droits réservés
+
+        <div class="center-panel">
+            <h1 class="server-title">NOM DU SERVEUR</h1>
+            <p class="server-subtitle">Une expérience unique</p>
+        </div>
+
+        <div class="right-panel">
+            <h2>Staff</h2>
+            <ul class="staff-list">
+                <li>
+                    <img src="https://i.imgur.com/staff1.jpg" class="staff-avatar">
+                    <span>Fondateur - Pseudo1</span>
+                </li>
+                <li>
+                    <img src="https://i.imgur.com/staff2.jpg" class="staff-avatar">
+                    <span>Admin - Pseudo2</span>
+                </li>
+                <li>
+                    <img src="https://i.imgur.com/staff3.jpg" class="staff-avatar">
+                    <span>Modérateur - Pseudo3</span>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <!-- Ajout de l'élément audio pour la musique -->
-    <audio id="background-music" loop>
-        <source src="C:\Users\ethan\Desktop\loadingserveur\musique.mp3" type="audio/mp3">
-        Votre navigateur ne supporte pas la balise audio.
-    </audio>
+    <div class="social-links">
+        <a href="https://discord.gg/votrelien">Discord</a>
+        <a href="https://steam.com/votregroupe">Steam</a>
+        <a href="https://forum.votresite.com">Forum</a>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <canvas class="particles"></canvas>
+
     <script>
-        // Récupère l'élément audio
-        const music = document.getElementById('background-music');
+        // Slideshow automatique
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
 
-        // Démarre la musique au début du chargement
-        window.addEventListener('load', () => {
-            music.play(); // Démarre la musique lorsque la page est complètement chargée
-            updateLoadingProgress();
-            animateBackground();
-        });
-
-        // Arrêter la musique lorsque le chargement est terminé
-        function stopMusic() {
-            music.pause(); // Pause la musique à la fin du chargement
-            music.currentTime = 0; // Remet la musique au début
+        function nextSlide() {
+            slides[currentSlide].style.opacity = '0';
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].style.opacity = '1';
         }
 
-        // Simulation du chargement
-        const loadingMessages = [
-            "Téléchargement des fichiers addons",
-            "Chargement des textures",
-            "Configuration du serveur",
-            "Préparation du monde",
-            "Chargement des scripts Lua",
-            "Initialisation des modules RP",
-            "Connexion à la base de données",
-            "Presque prêt"
-        ];
+        slides[0].style.opacity = '1';
+        setInterval(nextSlide, 5000);
 
-        const progressBar = document.getElementById('progress-bar');
-        const loadingStatus = document.getElementById('loading-status');
-        let progress = 0;
-        let messageIndex = 0;
+        // Système de particules
+        const canvas = document.querySelector('.particles');
+        const ctx = canvas.getContext('2d');
 
-        function updateLoadingProgress() {
-            progress += Math.random() * 3;
-            if (progress > 100) progress = 100;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-            progressBar.style.width = progress + '%';
+        const particles = [];
+        const particleCount = 100;
 
-            if (progress < 100) {
-                const newMessageIndex = Math.floor(progress / 14);
-                if (newMessageIndex !== messageIndex) {
-                    messageIndex = newMessageIndex;
-                    loadingStatus.textContent = loadingMessages[messageIndex] + ` (${Math.floor(progress)}%)...`;
-                } else {
-                    loadingStatus.textContent = loadingMessages[messageIndex] + ` (${Math.floor(progress)}%)...`;
-                }
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+            }
 
-                setTimeout(updateLoadingProgress, Math.random() * 1000 + 200);
-            } else {
-                loadingStatus.textContent = "Chargement terminé ! Connexion au serveur...";
-                stopMusic(); // Arrête la musique lorsque le chargement est terminé
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
     </script>
 </body>
 </html>
