@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Screen - Serveur GMod</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+        }
+        
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: -1;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .title {
+            font-size: 5em;
+            font-weight: 900;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1.8em;
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+
+        .profile {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
+            margin-bottom: 40px;
+            overflow: hidden;
+            position: relative;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .profile img {
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .progress-container {
+            width: 80%;
+            max-width: 800px;
+            margin-top: 40px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff9a3c);
+            width: 0%;
+            border-radius: 4px;
+            animation: progress 30s linear forwards;
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .message-ticker {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px 0;
+            overflow: hidden;
+        }
+
+        .message-content {
+            display: flex;
+            animation: ticker 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        .message {
+            margin: 0 30px;
+            font-size: 1.2em;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 30px #e94560;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(233, 69, 96, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+            }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            10% { width: 15%; }
+            30% { width: 40%; }
+            50% { width: 60%; }
+            70% { width: 75%; }
+            90% { width: 90%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .game-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+        }
+
+        .info-item {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    
+    <div class="particles" id="particles-js"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">New Dawn RolePlay</h1>
+            <h2 class="subtitle">Un monde de possibilités vous attend</h2>
+        </div>
+        
+        <div class="profile">
+            <img src="/api/placeholder/300/300" alt="Avatar du serveur" id="profile-image">
+        </div>
+        
+        <div class="loading-text">
+            Chargement de votre expérience...
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <div id="loading-status">Téléchargement des fichiers addons (0%)...</div>
+        </div>
+    </div>
+    
+    <div class="game-info">
+        <div class="info-item">Map: <span id="map-name">gm_construct</span></div>
+        <div class="info-item">Joueurs: <span id="players">0/32</span></div>
+        <div class="info-item">Ping: <span id="ping">45ms</span></div>
+    </div>
+    
+    <div class="message-ticker">
+        <div class="message-content">
+            <div class="message">Bienvenue sur News Dawn RP ! Plongez dans un RP libre et immersif où chaque décision compte.</div>
+            <div class="message">Profitez d'objets et modèles 3D exclusifs : t'el que de la drogue à la police !</div>
+            <div class="message">Accédez rapidement à votre inventaire avec F4, et personnalisez-le en ajoutant des armes via ALT+C.</div>
+            <div class="message">Notre serveur est en évolution constante** ! Attendez-vous à de nouvelles fonctionnalités et améliorations régulières.</div>
+            <div class="message">Besoin d'aide ? Tapez /help pour découvrir toutes les fonctionnalités exclusives de notre serveur.</div>
+            <div class="message">Rejoignez notre Discord pour ne rien manquer des événements à venir et des mises à jour importantes !</div>            
+        </div>
+    </div>
+    
+    <div class="footer">
+        © 2025 - New Dawn RP - Tous droits réservés
+    </div>
+
+    <!-- Ajout de l'élément audio pour la musique -->
+    <audio id="background-music" loop>
+        <source src="C:\Users\ethan\Desktop\loadingserveur\musique.mp3" type="audio/mp3">
+        Votre navigateur ne supporte pas la balise audio.
+    </audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Récupère l'élément audio
+        const music = document.getElementById('background-music');
+
+        // Démarre la musique au début du chargement
+        window.addEventListener('load', () => {
+            music.play(); // Démarre la musique lorsque la page est complètement chargée
+            updateLoadingProgress();
+            animateBackground();
+        });
+
+        // Arrêter la musique lorsque le chargement est terminé
+        function stopMusic() {
+            music.pause(); // Pause la musique à la fin du chargement
+            music.currentTime = 0; // Remet la musique au début
+        }
+
+        // Simulation du chargement
+        const loadingMessages = [
+            "Téléchargement des fichiers addons",
+            "Chargement des textures",
+            "Configuration du serveur",
+            "Préparation du monde",
+            "Chargement des scripts Lua",
+            "Initialisation des modules RP",
+            "Connexion à la base de données",
+            "Presque prêt"
+        ];
+
+        const progressBar = document.getElementById('progress-bar');
+        const loadingStatus = document.getElementById('loading-status');
+        let progress = 0;
+        let messageIndex = 0;
+
+        function updateLoadingProgress() {
+            progress += Math.random() * 3;
+            if (progress > 100) progress = 100;
+
+            progressBar.style.width = progress + '%';
+
+            if (progress < 100) {
+                const newMessageIndex = Math.floor(progress / 14);
+                if (newMessageIndex !== messageIndex) {
+                    messageIndex = newMessageIndex;
+                    loadingStatus.textContent = loadingMessages[messageIndex] + ` (${Math.floor(progress)}%)...`;
+                } else {
+                    loadingStatus.textContent = loadingMessages[messageIndex] + ` (${Math.floor(progress)}%)...`;
+                }
+
+                setTimeout(updateLoadingProgress, Math.random() * 1000 + 200);
+            } else {
+                loadingStatus.textContent = "Chargement terminé ! Connexion au serveur...";
+                stopMusic(); // Arrête la musique lorsque le chargement est terminé
+            }
+        }
+    </script>
+</body>
+</html>
