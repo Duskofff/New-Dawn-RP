@@ -110,6 +110,7 @@
             padding: 0.5rem;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
+            transition: background 0.3s ease;
         }
 
         .staff-avatar {
@@ -147,6 +148,14 @@
             height: 100%;
             pointer-events: none;
         }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body>
@@ -174,11 +183,7 @@
         <div class="right-panel">
             <h2>Staff</h2>
             <ul class="staff-list" id="staffList">
-                <li>
-                    <div id="staffProfile">
-                        <!-- Le profil Steam sera chargé ici -->
-                    </div>
-                </li>
+                <div class="loading">Chargement...</div>
             </ul>
         </div>
     </div>
@@ -190,9 +195,6 @@
     <canvas class="particles"></canvas>
 
     <script>
-        // Configuration Steam
-        const steamID = '76561199511612568'; // Ton SteamID64
-
         // Système de particules
         const canvas = document.querySelector('.particles');
         const ctx = canvas.getContext('2d');
@@ -247,9 +249,41 @@
             requestAnimationFrame(animate);
         }
 
+        // Chargement des profils Steam
+        async function loadStaffProfiles() {
+            const staffList = document.getElementById('staffList');
+            const loading = document.querySelector('.loading');
+            
+            try {
+                loading.style.display = 'block';
+                const response = await fetch('steam_api.php');
+                const staffData = await response.json();
+                
+                staffList.innerHTML = '';
+                
+                staffData.forEach(member => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <img src="${member.avatar}" class="staff-avatar" alt="${member.name}">
+                        <div class="staff-info">
+                            <span class="staff-name">${member.name}</span>
+                            <span class="staff-role">${member.role}</span>
+                        </div>
+                    `;
+                    staffList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Erreur lors du chargement des profils:', error);
+                staffList.innerHTML = '<li>Erreur lors du chargement des profils</li>';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
         // Initialisation
         init();
         animate();
+        loadStaffProfiles();
 
         // Gestion du redimensionnement
         window.addEventListener('resize', () => {
